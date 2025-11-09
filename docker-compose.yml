@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vouchers
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/vouchers
+      - PAYSTACK_SECRET_KEY=${PAYSTACK_SECRET_KEY}
+    volumes:
+      - .:/app
+    command: ["npm", "run", "dev"]
